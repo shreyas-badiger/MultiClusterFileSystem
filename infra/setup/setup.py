@@ -68,7 +68,7 @@ class Network:
             
 
 startTime = datetime.now()
-config = json.load(open("config.json"))
+config = json.load(open("../config/config.json"))
 devices = config["devices"]
 networks = config["networks"]
 ipJSON = {}
@@ -106,5 +106,5 @@ else:
         network_address = networks[n]["network_ip"]
         ipJSON["broadcast_ip"] = networkPrefix = ".".join(network_address.split(".")[0:-1])+".255"
     
-    with open('ip.json','w') as file:
+    with open('../output/ip.json','w') as file:
         file.write(json.dumps(ipJSON))
