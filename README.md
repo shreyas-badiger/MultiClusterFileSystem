@@ -1,4 +1,4 @@
-# MultiClusterFileSystem
+# Multi Cluster File System
 
 ### Setting up the container infrastructure
 
