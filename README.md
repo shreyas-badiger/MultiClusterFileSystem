@@ -7,7 +7,7 @@
 
 1. Install docker CE (https://docs.docker.com/v17.12/install/)
 2. Clone the repository (https://github.com/hard-fault/MultiClusterFileSystem.git)
-3. Pull the docker image for coontainers 
+3. Pull the docker image for containers 
 ```sh
 docker pull shrey67/node_image
 ```
