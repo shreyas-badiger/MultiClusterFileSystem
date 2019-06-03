@@ -1,5 +1,8 @@
 # Multi Cluster File System
 
+## System Architecture
+![Alt text](https://github.com/hard-fault/MultiClusterFileSystem/blob/master/rsrc/arch.png)
+
 ### Setting up the container infrastructure
 
 1. Install docker CE (https://docs.docker.com/v17.12/install/)
