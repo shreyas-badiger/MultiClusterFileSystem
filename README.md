@@ -10,12 +10,11 @@ docker pull shrey67/node_image
 ```
 4. Specify the topology in 
 ```sh
-MultiClusterFileSystem/config/config.json
+MultiClusterFileSystem/infra/config/config.json
 ```
 5. Deploy containers
 ```sh
-cd MultiClusterFileSystem/infra/setup
-python setup.py
+python MultiClusterFileSystem/infra/setup/setup.py
 ```
 6. List all the containers
 ```sh
@@ -35,5 +34,5 @@ docker exec -it <container_name> /bin/bash
 ```
 10. Remove the setup
 ```sh
-python setup -d
+python MultiClusterFileSystem/infra/setup/setup.py -d
 ```
