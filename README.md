@@ -1,6 +1,6 @@
 # MultiClusterFileSystem
 
-###Setting up the container infrastructure
+### Setting up the container infrastructure
 
 1. Install docker CE (https://docs.docker.com/v17.12/install/)
 2. Clone the repository (https://github.com/hard-fault/MultiClusterFileSystem.git)
