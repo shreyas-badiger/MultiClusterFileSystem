@@ -14,7 +14,8 @@ MultiClusterFileSystem/infra/config/config.json
 ```
 5. Deploy containers
 ```sh
-python MultiClusterFileSystem/infra/setup/setup.py
+cd MultiClusterFileSystem/infra/setup/
+python setup.py
 ```
 6. List all the containers
 ```sh
@@ -22,7 +23,8 @@ docker ps
 ```
 7. View container network topology and their IPs.
 ```sh
-MultiClusterFileSystem/output/ip.json
+cd MultiClusterFileSystem/output/
+cat ip.json
 ```
 8. Copy a file to container
 ```sh
@@ -34,5 +36,6 @@ docker exec -it <container_name> /bin/bash
 ```
 10. Remove the setup
 ```sh
-python MultiClusterFileSystem/infra/setup/setup.py -d
+cd MultiClusterFileSystem/infra/setup
+python setup.py -d
 ```
