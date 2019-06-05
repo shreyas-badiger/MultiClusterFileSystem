@@ -35,7 +35,7 @@ public class MutexServer {
 
     //returns 1 if file is already locked, 0 otherwise
     static int checkMutex(String file) {
-        if (mutex.get(file) == 1) {
+        if (mutex.getOrDefault(file,0) == 1) {
             return 1;
         } else {
             mutex.put(file, 1); //TODO
