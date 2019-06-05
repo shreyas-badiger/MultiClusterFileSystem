@@ -1,14 +1,16 @@
-import java.io.*;   
-import java.text.*;   
-import java.util.*;   
-import java.net.*;  
-import java.util.logging.Logger; 
+import java.io.*;
+import java.text.*;
+import java.util.*;
+import java.net.*;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class FileServer {
 
     private static ServerSocket serverSocket;
     private static Socket clientSocket = null;
+
+    static Set<String> files_blocked = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
 

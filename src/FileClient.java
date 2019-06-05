@@ -1,8 +1,8 @@
-import java.io.*;   
-import java.text.*;   
-import java.util.*;   
-import java.net.*;  
-import java.util.logging.Logger; 
+import java.io.*;
+import java.text.*;
+import java.util.*;
+import java.net.*;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class FileClient {
@@ -59,11 +59,11 @@ public class FileClient {
                             switch(inputAfterWriting){
                                 case "Yes":
                                     System.err.print("here");
-                                    sendFile(("received_from_server_" + fileName));
+                                    sendFile((fileName));
                                     break;
                             }
                     }
-                break;
+                    break;
             }
         } catch (Exception e) {
             System.err.println("not valid input");
@@ -75,7 +75,7 @@ public class FileClient {
 
     public static String selectAction() throws IOException {
         System.out.println("1. Send file.");
-        System.out.println("2. Recieve file.");
+        System.out.println("2. Receive file.");
         System.out.print("\nMake selection: ");
 
         return stdin.readLine();
@@ -103,6 +103,11 @@ public class FileClient {
             dos.writeLong(mybytearray.length);
             dos.write(mybytearray, 0, mybytearray.length);
             dos.flush();
+
+            fis.close();
+            bis.close();
+            dis.close();
+            dos.close();
             System.out.println("File "+fileName+" sent to Server.");
         } catch (Exception e) {
             System.err.println("File does not exist!");
@@ -117,7 +122,7 @@ public class FileClient {
             DataInputStream clientData = new DataInputStream(in);
 
             fileName = clientData.readUTF();
-            OutputStream output = new FileOutputStream(("received_from_server_" + fileName));
+            OutputStream output = new FileOutputStream((fileName));
             long size = clientData.readLong();
             byte[] buffer = new byte[1024];
             while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
