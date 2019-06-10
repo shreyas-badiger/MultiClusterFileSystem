@@ -10,6 +10,7 @@ public class MasterConnection implements Runnable {
 
     private Socket masterSocket;
     private BufferedReader in = null;
+    private static PrintStream os;
     int flag;
 
     public MasterConnection(Socket client) {
@@ -23,6 +24,16 @@ public class MasterConnection implements Runnable {
 
             //get the filename,oper from a master
             String fname_oper = in.readLine();
+
+            //the backup server sends a heartbeat check message to the Mutex Server
+            //The Mutex Server responds with the message "Up" if it is up, else no response
+            //When the backup server gets no response for a certain time(a timeout value), it takes charge as the mutex server
+
+            if (fname_oper.equals("heartbeat")) {
+                os = new PrintStream(masterSocket.getOutputStream());
+                os.println("Up");
+            }
+
             String[] pair = fname_oper.trim().split(",");
 
             //pair[0] has the file name ; pair[1] has the operation requested

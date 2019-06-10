@@ -141,7 +141,7 @@ public class CLIENTConnection implements Runnable {
             }
 
             output.close();
-            clientData.close();
+            //clientData.close();
 
             System.out.println("File "+fileName+" received from client.");
 
