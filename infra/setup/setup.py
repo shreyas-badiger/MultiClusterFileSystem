@@ -35,6 +35,8 @@ class Network:
         self.networkDict = networkDict
         self.network = network
         self.networkType = networkDict["type"]
+        self.master = networkDict["master"]
+        self.master_ip = ""
     
     def createNetwork(self):
         network_address = self.networkDict["network_ip"]
@@ -43,22 +45,43 @@ class Network:
         os.system(command)
         print("\n")
 
+
+    def getIp(self, networkPrefix, d):
+        command = "docker exec -i {0} ip a | grep {1} | awk '{{print $2}} {{print $7}}'".format(d, networkPrefix)
+        result = os.popen(command).read().split("\n")[:-1]
+        print ("ip address:{}, eth:{}".format(result[0], result[1]))
+        return result
+
     def makeConnections(self):
         netJSON = {}
         devices = self.networkDict["devices"]
         network_address = self.networkDict["network_ip"]
+        networkPrefix = ".".join(network_address.split(".")[0:-1])
+
+        #Connect the master
+        print("Connecting {} to {}".format(self.master, self.network))
+        command = "docker network connect {0} {1}".format(self.network, self.master)
+        os.system(command)
+        result = self.getIp(networkPrefix, self.master)
+        self.master_ip = result[0]
+        netJSON[self.master] = {"ip":result[0], "eth":result[1]}
+        self.defaultSetting(self.master)
+
+        #Connect others
         for d in devices:
             print("Connecting {} to {}".format(d, self.network))
-            command = "docker network connect {0} {1}".format(self.network,d)
+            command = "docker network connect {0} {1}".format(self.network, d)
             os.system(command)
 
             #Extract the ip and eth number for the device d
-            networkPrefix = ".".join(network_address.split(".")[0:-1])
-            command = "docker exec -i {0} ip a | grep {1} | awk '{{print $2}} {{print $7}}'".format(d, networkPrefix)
-            result = os.popen(command).read().split("\n")[:-1]
-            print ("ip address:{}, eth:{}".format(result[0], result[1]))
+            result = self.getIp(networkPrefix, d)
             netJSON[d] = {"ip":result[0], "eth":result[1]}
             self.defaultSetting(d)
+
+            #Put ip (IP address of it's master) file to the container
+            os.system("echo {} > ip".format(self.master_ip))
+            os.system("docker cp ip {}:/".format(d))
+
         return netJSON
     
     def defaultSetting(self, d):
@@ -108,3 +131,4 @@ else:
     
     with open('../output/ip.json','w') as file:
         file.write(json.dumps(ipJSON))
+

@@ -10,51 +10,58 @@
 
     "networks":{
         "cluster_1_public_nw":{
+            "master": "master1",
             "type":"public",
             "network_ip":"192.168.1.0/24",
-            "devices":["C1.1", "C1.2", "C1.3", "master1"],
+            "devices":["C1.1", "C1.2", "C1.3"],
             "bandwidth_mbps":100,
             "latency_ms":1
         },
         "cluster_2_public_nw":{
+            "master": "master2",
             "type":"public",
             "network_ip":"192.168.2.0/24",
-            "devices":["C2.1", "C2.2", "C2.3", "master2"],
+            "devices":["C2.1", "C2.2", "C2.3"],
             "bandwidth_mbps":100,
             "latency_ms":1
         },
         "cluster_3_public_nw":{
+            "master": "master3",
             "type":"public",
             "network_ip":"192.168.3.0/24",
-            "devices":["C3.1", "C3.2", "C3.3", "master3"],
+            "devices":["C3.1", "C3.2", "C3.3"],
             "bandwidth_mbps":100,
             "latency_ms":1
         },
         "cluster_1_private_nw":{
+            "master": "master1",
             "type":"private",
             "network_ip":"172.16.1.0/24",
-            "devices":["slave1.1","slave1.2","slave1.3","slave1.4","slave1.5","master1"],
+            "devices":["slave1.1","slave1.2","slave1.3","slave1.4","slave1.5"],
             "bandwidth_mbps":100,
             "latency_ms":1
         },
         "cluster_2_private_nw":{
+            "master": "master2",
             "type":"private",
             "network_ip":"172.16.2.0/24",
-            "devices":["slave2.1","slave2.2","slave2.3","slave2.4","slave2.5","master2"],
+            "devices":["slave2.1","slave2.2","slave2.3","slave2.4","slave2.5"],
             "bandwidth_mbps":100,
             "latency_ms":1
         },
         "cluster_3_private_nw":{
+            "master": "master3",
             "type":"private",
             "network_ip":"172.16.3.0/24",
-            "devices":["slave3.1","slave3.2","slave3.3","slave3.4","slave3.5","master3"],
+            "devices":["slave3.1","slave3.2","slave3.3","slave3.4","slave3.5"],
             "bandwidth_mbps":100,
             "latency_ms":1
         },
         "cluster_global_nw":{
+            "master": "mutex_server",
             "type":"global",
             "network_ip":"10.0.0.0/24",
-            "devices":["master1","master2","master3","mutex_server"],
+            "devices":["master1","master2","master3"],
             "bandwidth_mbps":100,
             "latency_ms":1
         }
