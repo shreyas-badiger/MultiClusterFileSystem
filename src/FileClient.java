@@ -25,40 +25,50 @@ public class FileClient {
         }
 
         os = new PrintStream(sock.getOutputStream());
+        System.err.println("**********************************************");
+        System.out.print("\n\n");
+        System.out.print("This is a Multi-Cloud Distributed File System.");
+        System.out.print("\n\n");
+        System.out.print("You are currently logged in to Client 1 on Cluster 1.");
+        System.out.print("\n\n");
+        System.err.println("**********************************************");
 
         try {
             switch (Integer.parseInt(selectAction())) {
                 case 1:
                     os.println("1");
                     String fileName;
-                    System.err.print("Enter file name you wish to upload: ");
+                    System.err.println("Enter file name you wish to upload: ");
                     fileName = stdin.readLine();
                     sendFile(fileName);
                     break;
                 case 2:
                     os.println("2");
-                    System.err.print("Enter the Mode: Read or Write ?");
+                    System.err.println("Enter the Mode: Read or Write ?   ");
                     mode = stdin.readLine();
                     os.println(mode);
                     switch(mode){
                         case "Read":
-                            System.err.print("Enter file name you wish to read: ");
+                        // How to display all the available files to read/write ?????
+                            System.err.print("Enter the file name you wish to read: ");
                             fileName = stdin.readLine();
                             os.println(fileName);
                             receiveFile(fileName);
                             break;
                         case "Write":
-                            System.err.print("Enter file name you need to write in: ");
+                        // How to display all the available files to read/write ?????
+                            System.err.print("Enter the file name you need to write in: ");
                             fileName = stdin.readLine();
                             os.println(fileName);
                             receiveFile(fileName);
-                            System.err.print("Type 'Yes' to commit your changes.");
+                            System.out.print("\n\n");
+                            System.err.print("Type 'Yes' to commit your changes -->>>  ");
                             inputAfterWriting = stdin.readLine();
                             os.println(inputAfterWriting);
-                            System.err.print(inputAfterWriting);
+                            // System.err.print(inputAfterWriting);
                             switch(inputAfterWriting){
                                 case "Yes":
-                                    System.err.print("here");
+                                    // System.err.print("here");
                                     sendFile((fileName));
                                     break;
                             }
@@ -66,10 +76,9 @@ public class FileClient {
                     break;
             }
         } catch (Exception e) {
-            System.err.println("not valid input");
+            System.out.print("\n\n");
+            System.err.println("Oops! Something went wrong :( Please try again. ");
         }
-
-
         sock.close();
     }
 
@@ -82,30 +91,46 @@ public class FileClient {
     }
 
     public static void sendFile(String fileName) {
-        try {
+        /*try {
+            sock = new Socket("192.168.1.5", 4444);
+            } catch (Exception e) {
+            System.err.println("Cannot connect to the server, try again later.");
+            System.exit(1);
+            }*/
+         try {
             // fileName = stdin.readLine();
             System.err.print(fileName);
             File myFile = new File(fileName);
             byte[] mybytearray = new byte[(int) myFile.length()];
-
+            //byte[] mybytearray = new byte[21];
+            System.out.print("\nmyFile.length = "+ myFile.length());
             FileInputStream fis = new FileInputStream(myFile);
             BufferedInputStream bis = new BufferedInputStream(fis);
-            //bis.read(mybytearray, 0, mybytearray.length);
-
             DataInputStream dis = new DataInputStream(bis);
             dis.readFully(mybytearray, 0, mybytearray.length);
-
+            System.out.print("\nmyByteArray contents:   ");
+            System.out.println(Arrays.toString(mybytearray));
             OutputStream os = sock.getOutputStream();
 
             //Sending file name and file size to the server
             DataOutputStream dos = new DataOutputStream(os);
-            dos.writeUTF(myFile.getName());
-            dos.writeLong(mybytearray.length);
-            dos.write(mybytearray, 0, mybytearray.length);
+          //System.out.print("\nMyfile.getname....\n");
+          //System.out.print(myFile.getName());
+        //    dos.writeUTF(fileName);
+            String dos_input = fileName + "," + mybytearray.length + "," + new String(mybytearray);
+            System.out.println("DOS input : " + dos_input);
+            dos.writeChars(dos_input);
+        //dos.writeLong(mybytearray.length);
+            //dos.write();
+           // System.out.print("\nmybytearray length ");
+           // System.out.print(mybytearray.length);
+            //dos.write(mybytearray, 0, mybytearray.length);
             dos.flush();
-
+           // fis.close();
+           // bis.close();
+           // dis.close();
+           // dos.close();
             sock.shutdownOutput();
-
             System.out.println("File "+fileName+" sent to Server.");
         } catch (Exception e) {
             System.err.println("File does not exist!");

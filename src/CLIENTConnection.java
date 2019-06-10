@@ -42,7 +42,7 @@ public class CLIENTConnection implements Runnable {
                                         sendFile(outGoingFileName);
                                         break;
                                     }
-                                case "Write":
+                                    case "Write":
                                     os = new PrintStream(clientSocket.getOutputStream()); // to write to client
 
                                     while((outGoingFileName = in.readLine()) != null){
@@ -59,7 +59,7 @@ public class CLIENTConnection implements Runnable {
 
                                         try {
                                             //opening socket to mutex server
-                                            sock1 = new Socket("localhost", 4445);
+                                            sock1 = new Socket("10.0.0.5", 4445);
                                             in2 = new BufferedReader(new InputStreamReader(sock1.getInputStream()));
                                             os1 = new PrintStream(sock1.getOutputStream()); //to write to mutex server
                                         } catch (Exception e) {
@@ -123,26 +123,76 @@ public class CLIENTConnection implements Runnable {
     public void receiveFile() {
         try {
             int bytesRead;
-
-            DataInputStream clientData = new DataInputStream(clientSocket.getInputStream());
+            DataInputStream clientData = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
             System.out.println("In receive file....");
-
-            String fileName = clientData.readUTF();
-            System.out.println("Got a file..." + fileName);
-
-            OutputStream output = new FileOutputStream((fileName));
-            long size = clientData.readLong();
-            System.out.println("Got a file of size:..." + size);
-
-            byte[] buffer = new byte[1024];
-            while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
-                output.write(buffer, 0, bytesRead);
-                size -= bytesRead;
+            StringBuffer inputLine = new StringBuffer();
+/*          String tmp;
+            while ((tmp = clientData.readLine()) != null) {
+                    System.out.print("\n here...");
+                    inputLine.append(tmp);
+                    System.out.println(tmp);
             }
+*/          System.out.print("\n");
+            System.out.print("clientData available : " + clientData.available());
+            byte c = 0;
+            String fileName = "";
+            int i = 0;
+            while(c != -1){
+                try{
+                        c = clientData.readByte();
+                        i++;
+                        if(c==',')
+                                break;
+                        char character_1 = (char)c;
+                        System.out.println("Character in fileName : " + c);
+                        if(c != 0){
+                                System.out.println("Inside while Character in fileName : " + character_1);
+                                fileName += character_1;
+                        }
+        //              System.out.println("Filename: "+ fileName);
+                }
+                catch(EOFException e){
+                        break;
+                }
+            }
+            String fileSize = new String();
+            while(c != -1){
+                try{
+                        c = clientData.readByte();
+                        i++;
+                        if(c == ',')
+                                break;
+                        //int a = Character.getNumericValue((char)c);
+                        //fileSize += a;
+                        //System.out.println(new String(c + ""));
+                        char character = (char)c;
+                        if(character >= 48 && character <= 57){
+                                fileSize += character;
+                        }
+                }
+                catch(EOFException e){
+                        break;
+                }
 
-            output.close();
-            //clientData.close();
-
+            }
+            for(int j = 0; j<fileSize.length(); j++){
+                System.out.println("Character in fileSize string : " + fileSize.charAt(j));
+            }
+            System.out.println("Got a file... FileName = " + fileName + " File Size = " + fileSize);
+            System.out.print("\n\n");
+            //fileSize = fileSize.trim();
+            Integer file_size = Integer.valueOf(fileSize);
+            System.out.println("Number_filesize : " + file_size);
+            OutputStream output = new FileOutputStream(fileName);
+            //long size = clientData.readLong();
+            //System.out.println("Got a file of size:..." + size);
+            byte[] buffer = new byte[1024];
+            while (file_size > 0 && (bytesRead = clientData.read(buffer, i, (int) Math.min(1024, file_size))) != -1) {
+                System.out.println("Inside the while...");
+                // this needs to be fixed....
+                output.write(buffer, 0, bytesRead);
+                file_size -= bytesRead;
+            }
             System.out.println("File "+fileName+" received from client.");
 
             //whenever the receives a file, it should be put in HDFS and cleared off from master's memory
@@ -151,7 +201,7 @@ public class CLIENTConnection implements Runnable {
             //the mutex server is to be updated
             try {
                 //opening socket to mutex server
-                sock1 = new Socket("localhost", 4445);
+                sock1 = new Socket("10.0.0.5", 4445);
                 in2 = new BufferedReader(new InputStreamReader(sock1.getInputStream()));
 
             } catch (Exception e) {
@@ -169,11 +219,17 @@ public class CLIENTConnection implements Runnable {
 
             //broadcast this file to other masters
             broadcastFile(fileName);
+            output.close();
+            clientData.close();
 
         } catch (IOException ex) {
+            System.out.print("Exception: \n");
+            ex.printStackTrace();
             System.err.println("Client error. Connection closed.");
         }
     }
+
+
     public void sendFile(String fileName) {
         try {
             //handle file read
@@ -226,6 +282,7 @@ public class CLIENTConnection implements Runnable {
             DatagramPacket packet
                     = new DatagramPacket(final_array, final_array.length, InetAddress.getByName("255.255.255.255"), 4446);
             socket.send(packet);
+            System.out.println("The updated file has been broadcast to all the Master servers...");
             socket.close();
 
 
