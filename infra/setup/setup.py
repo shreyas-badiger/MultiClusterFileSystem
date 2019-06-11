@@ -100,6 +100,18 @@ class Network:
         print("Setting bw to {} & latency to {}".format(bandwidth_mbps, latency_ms))
             
 
+class HDFS:
+    def __init__(self, master, slaves):
+        self.master = master
+        self.slaves = slaves
+
+    def setConfigFiles(self):
+        return
+
+    def startHDFS(self):
+        return
+
+
 startTime = datetime.now()
 config = json.load(open("../config/config.json"))
 devices = config["devices"]
