@@ -11,16 +11,44 @@ class SimpleTests:
         config = json.load(open("../config/config.json"))
         self.devices = config["devices"]
         self.networks = config["networks"]
+
+        self.compileClients()
+        self.compileAndStartServers()
+
+        self.clientWorkflow1()
+        self.clientWorkflow2()
+
+    def compileClients(self):
         for d in self.devices:
             os.system("docker exec -i {} javac src/client/FileClient.java".format(d))
 
-        self.workflow1()
-        self.workflow2()
+    def compileAndStartServers(self):
+        started = set()
+        for n in self.networks:
+            master = n["master"]
+            #to make sure the server isn't started twice.
+            if master in started:
+                continue
+            started.add(master)
+
+            if master == "mutex_server":
+                os.system("docker exec -i {} javac src/mutex_server/MutexServer.java".format(master))
+                os.system("docker exec -i {} javac src/mutex_server/MasterConnection.java".format(master))
+
+                os.system("docker exec -i {} java src/mutex_server/MutexServer &".format(master)) ##MIGHT NOT WORK, AS ENTIRE COMMAND BECOMES BG
+            else:
+                os.system("docker exec -i {} javac src/server/BroadcastListener.java".format(master))
+                os.system("docker exec -i {} javac src/server/FileServer.java".format(master))
+                os.system("docker exec -i {} javac src/server/CLIENTConnection.java".format(master))
+                os.system("docker exec -i {} javac src/server/BroadcastConnection.java".format(master))
+
+                os.system("docker exec -i {} java src/server/FileServer &".format(master)) ##MIGHT NOT WORK, AS ENTIRE COMMAND BECOMES BG
+                os.system("docker exec -i {} java src/server/BroadcastListener &".format(master)) ##MIGHT NOT WORK, AS ENTIRE COMMAND BECOMES BG
 
     """
     File created by a client in cluster1 is accessible by a client in cluster2
     """
-    def workflow1(self):
+    def clientWorkflow1(self):
 
         commands = [
             "docker exec -i C2.1 ls src/client/*.txt"
@@ -57,7 +85,7 @@ class SimpleTests:
     """
     All clusters are interconnected. All create one file each. All can access each other's files.
     """
-    def workflow2(self):
+    def clientWorkflow2(self):
         # All clients create and send a file to the master
         for d in self.devices:
             print("{0} is writing file {0}_file.txt".format(d))
@@ -73,7 +101,6 @@ class SimpleTests:
                 os.system("docker exec -i {} java src/client/FileClient rcv {}_file.txt".format(d, fileName))
             print("\t ** LS OUTPUT **")
             os.system("docker exec -i {} ls src/client/*.txt")
-
 
 
 SimpleTests()
