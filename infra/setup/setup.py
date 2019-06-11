@@ -8,6 +8,7 @@ from threading import Thread
 imageName = "shrey67/node_image"
 deviceCode = {"masters": 0 , "slaves": 1, "clients": 2}
 envVariable = {"public":"PUB", "private":"PVT", "global":"GLOBAL"}
+tmpDir = "../../tmp"
 
 class Device:
     def __init__(self, devicesList, deviceType):
@@ -24,9 +25,11 @@ class Device:
     
     def defaultSetting(self, d):
         commands = [
+            "docker cp ../../tmp/src.tar.gz {}:/".format(d),
+            "docker exec -i {} tar -zxvf /src.tar.gz".format(d),
         ]
         for command in commands:
-            os.system(command)
+            os.popen(command).read()
         return
 
 
@@ -57,6 +60,7 @@ class Network:
         devices = self.networkDict["devices"]
         network_address = self.networkDict["network_ip"]
         networkPrefix = ".".join(network_address.split(".")[0:-1])
+        clientIPs = {}
 
         #Connect the master
         print("Connecting {} to {}".format(self.master, self.network))
@@ -76,11 +80,17 @@ class Network:
             #Extract the ip and eth number for the device d
             result = self.getIp(networkPrefix, d)
             netJSON[d] = {"ip":result[0], "eth":result[1]}
+            clientIPs[d] = result[0]
             self.defaultSetting(d)
 
             #Put ip (IP address of it's master) file to the container
-            os.system("echo {} > ip".format(self.master_ip))
-            os.system("docker cp ip {}:/".format(d))
+            os.system("echo {} > {}/ip".format(self.master_ip, tmpDir))
+            os.system("docker cp {}/ip {}:/".format(tmpDir, d))
+
+
+        with open('{}/clientIPs.json'.format(tmpDir),'w') as file:
+            file.write(json.dumps(clientIPs))
+        os.system("docker cp {}/clientIPs.json {}:/".format(tmpDir, self.master))
 
         return netJSON
     
@@ -106,6 +116,8 @@ if len(sys.argv) == 2 and sys.argv[1] == "-d":
         command = "docker network rm {}".format(n)
         os.system(command)
 else:
+    if(input("\nPlease tar the source code (tar -zcvf tmp/src.tar.gz src)\n  Press 0 to exit.\n  Press 1 to continue\n\n") == 0):
+        sys.exit()
     #Create Devices
     print("\n\n\t\tCREATING DEVICES")
     print("\t\t----------------\n")
