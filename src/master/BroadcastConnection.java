@@ -23,14 +23,27 @@ public class BroadcastConnection implements Runnable {
             String temp = null;
             temp = bfReader.readLine(); // read the filename
             System.out.println("hereeee...  "+ temp);
-            //FileOutputStream output = new FileOutputStream((temp)); // filename
-            //int size = Integer.parseInt(bfReader.readLine());
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
-            while((temp = bfReader.readLine()) != null){
-                writer.append(temp);
+            //temp could be a filename or an IP in the format IP-<ip address>
+
+            if(temp.startsWith("IP")) {
+                String[] arr = temp.split("-");
+                String newMutexServerIP = arr[1];
+
+                //update the IP file with this IP, so that after this the master will call this new server
+
+            } else {
+
+                //FileOutputStream output = new FileOutputStream((temp)); // filename
+                //int size = Integer.parseInt(bfReader.readLine());
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
+                while((temp = bfReader.readLine()) != null){
+                    writer.append(temp);
+                }
+                writer.close();
+
             }
-            writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();
