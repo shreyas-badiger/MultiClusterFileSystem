@@ -17,7 +17,8 @@ public class FileClient {
 
     public static void main(String[] args) throws IOException {
         try {
-            sock = new Socket("localhost", 4444);
+            String masterIP = readIPFile("/ip");
+            sock = new Socket(masterIP, 4444);
             stdin = new BufferedReader(new InputStreamReader(System.in));
         } catch (Exception e) {
             System.err.println("Cannot connect to the server, try again later.");
@@ -80,6 +81,23 @@ public class FileClient {
             System.err.println("Oops! Something went wrong :( Please try again. ");
         }
         sock.close();
+    }
+
+    public static String readIPFile(String IPfileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(IPfileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+    
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
     }
 
     public static String selectAction() throws IOException {

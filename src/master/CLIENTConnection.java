@@ -59,7 +59,8 @@ public class CLIENTConnection implements Runnable {
 
                                         try {
                                             //opening socket to mutex server
-                                            sock1 = new Socket("10.0.0.5", 4445);
+                                            String mutex_server_ip = readIPFile("/ip");
+                                            sock1 = new Socket(mutex_server_ip, 4445);
                                             in2 = new BufferedReader(new InputStreamReader(sock1.getInputStream()));
                                             os1 = new PrintStream(sock1.getOutputStream()); //to write to mutex server
                                         } catch (Exception e) {
@@ -117,6 +118,23 @@ public class CLIENTConnection implements Runnable {
 
         } catch (IOException ex) {
             Logger.getLogger(CLIENTConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static String readIPFile(String IPfileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(IPfileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+    
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
         }
     }
 
@@ -201,7 +219,8 @@ public class CLIENTConnection implements Runnable {
             //the mutex server is to be updated
             try {
                 //opening socket to mutex server
-                sock1 = new Socket("10.0.0.5", 4445);
+                String mutex_server_ip = readIPFile("/ip");
+                sock1 = new Socket(mutex_server_ip, 4445);
                 in2 = new BufferedReader(new InputStreamReader(sock1.getInputStream()));
 
             } catch (Exception e) {
