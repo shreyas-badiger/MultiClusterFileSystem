@@ -23,6 +23,7 @@ RUN apt-get install iproute2 -y
 
 #Install dev tools
 RUN apt-get install vim -y
+RUN apt-get install python2.7 -y
 
 #Install Java
 RUN apt-get update -y

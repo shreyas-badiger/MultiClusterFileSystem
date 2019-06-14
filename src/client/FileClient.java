@@ -26,13 +26,13 @@ public class FileClient {
         }
         
         os = new PrintStream(sock.getOutputStream());
-        System.err.println("**********************************************");
-        System.out.print("\n\n");
-        System.out.print("This is a Multi-Cloud Distributed File System.");
-        System.out.print("\n\n");
-        System.out.print("You are currently logged in to Client 1 on Cluster 1.");
-        System.out.print("\n\n");
-        System.err.println("**********************************************");
+//        System.err.println("**********************************************");
+//        System.out.print("\n\n");
+//        System.out.print("This is a Multi-Cloud Distributed File System.");
+//        System.out.print("\n\n");
+//        System.out.print("You are currently logged in to Client 1 on Cluster 1.");
+//        System.out.print("\n\n");
+//        System.err.println("\n**********************************************\n");
 
         try {
             switch (args[0]) {
@@ -62,7 +62,7 @@ public class FileClient {
                             fileName = args[2];
                             os.println(fileName);
                             receiveFile(fileName);
-                            System.out.print("\n\n");
+//                            System.out.print("\n\n");
                             //System.err.print("Type 'Yes' to commit your changes -->>>  ");
                             try
                             {
@@ -128,17 +128,17 @@ public class FileClient {
             }*/
          try {
             // fileName = stdin.readLine();
-            System.err.print(fileName);
+            //System.err.print(fileName);
             File myFile = new File(fileName);
             byte[] mybytearray = new byte[(int) myFile.length()];
             //byte[] mybytearray = new byte[21];
-            System.out.print("\nmyFile.length = "+ myFile.length());
+            //System.out.print("\nmyFile.length = "+ myFile.length());
             FileInputStream fis = new FileInputStream(myFile);
             BufferedInputStream bis = new BufferedInputStream(fis);
             DataInputStream dis = new DataInputStream(bis);
             dis.readFully(mybytearray, 0, mybytearray.length);
-            System.out.print("\nmyByteArray contents:   ");
-            System.out.println(Arrays.toString(mybytearray));
+            //System.out.print("\nmyByteArray contents:   ");
+            //System.out.println(Arrays.toString(mybytearray));
             OutputStream os = sock.getOutputStream();
 
             //Sending file name and file size to the server
@@ -147,7 +147,7 @@ public class FileClient {
           //System.out.print(myFile.getName());
         //    dos.writeUTF(fileName);
             String dos_input = fileName + "," + mybytearray.length + "," + new String(mybytearray);
-            System.out.println("DOS input : " + dos_input);
+            //System.out.println("DOS input : " + dos_input);
             dos.writeChars(dos_input);
         //dos.writeLong(mybytearray.length);
             //dos.write();

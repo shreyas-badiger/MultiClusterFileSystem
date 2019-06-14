@@ -10,6 +10,14 @@ deviceCode = {"masters": 0 , "slaves": 1, "clients": 2}
 envVariable = {"public":"PUB", "private":"PVT", "global":"GLOBAL"}
 tmpDir = "../../tmp"
 
+def tarMyCode():
+    os.system("rm -rf code")
+    os.system("mkdir code")
+    os.system("cp ../../src/client/* code/")
+    os.system("cp ../../src/master/* code/")
+    os.system("cp ../../src/mutex_server/* code/")
+    os.system("tar -zcf code.tar.gz -C code .")
+
 class Device:
     def __init__(self, devicesList, deviceType):
         self.devicesList = devicesList
@@ -25,8 +33,8 @@ class Device:
     
     def defaultSetting(self, d):
         commands = [
-            "docker cp ../../tmp/src.tar.gz {}:/".format(d),
-            "docker exec -i {} tar -zxvf /src.tar.gz".format(d),
+            "docker cp code.tar.gz {}:/".format(d),
+            "docker exec -i {} tar -zxvf code.tar.gz".format(d),
         ]
         for command in commands:
             os.popen(command).read()
@@ -52,6 +60,7 @@ class Network:
     def getIp(self, networkPrefix, d):
         command = "docker exec -i {0} ip a | grep {1} | awk '{{print $2}} {{print $7}}'".format(d, networkPrefix)
         result = os.popen(command).read().split("\n")[:-1]
+        result[0] = result[0].split("/")[0]
         print ("ip address:{}, eth:{}".format(result[0], result[1]))
         return result
 
@@ -98,6 +107,12 @@ class Network:
         bandwidth_mbps = self.networkDict["bandwidth_mbps"]
         latency_ms = self.networkDict["latency_ms"]
         print("Setting bw to {} & latency to {}".format(bandwidth_mbps, latency_ms))
+        # commands = [
+        #     "sudo docker exec -i {0} tc qdisc add dev {1} handle 1: root htb default 11".format(d, eth_ip_dict[gw][private_network[i]]["eth"]),
+        #     "sudo docker exec -i {0} tc class add dev {1} parent 1: classid 1:1 htb rate {2}Mbps".format(gw, eth_ip_dict[gw][private_network[i]]["eth"], private_networks_dict[private_network[i]]["bandwidth_mbps"]),
+        #     "sudo docker exec -i {0} tc class add dev {1} parent 1:1 classid 1:11 htb rate {2}Mbit".format(gw, eth_ip_dict[gw][private_network[i]]["eth"], private_networks_dict[private_network[i]]["bandwidth_mbps"]),
+        #     "sudo docker exec -i {0} tc qdisc add dev {1} parent 1:11 handle 10: netem delay {2}ms".format(gw, eth_ip_dict[gw][private_network[i]]["eth"], float( private_networks_dict[private_network[i]]["latency_ms"]))
+        # ]
             
 
 class HDFS:
@@ -128,8 +143,9 @@ if len(sys.argv) == 2 and sys.argv[1] == "-d":
         command = "docker network rm {}".format(n)
         os.system(command)
 else:
-    if(input("\nPlease tar the source code (tar -zcvf tmp/src.tar.gz src)\n  Press 0 to exit.\n  Press 1 to continue\n\n") == 0):
-        sys.exit()
+    tarMyCode()
+    # if(input("\nPlease tar the source code (tar -zcvf tmp/src.tar.gz src)\n  Press 0 to exit.\n  Press 1 to continue\n\n") == 0):
+    #     sys.exit()
     #Create Devices
     print("\n\n\t\tCREATING DEVICES")
     print("\t\t----------------\n")
@@ -155,4 +171,3 @@ else:
     
     with open('../output/ip.json','w') as file:
         file.write(json.dumps(ipJSON))
-
