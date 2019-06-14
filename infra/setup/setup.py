@@ -27,7 +27,7 @@ class Device:
     def createDevices(self):
         for d in self.devicesList:
             print("Creating device {}".format(d))
-            command = "docker run -d --hostname {0} --name {0} {1}".format(d, imageName)
+            command = "docker run -d --hostname {0} --name {0} --cap-add=NET_ADMIN {1}".format(d, imageName)
             os.system(command)
             self.defaultSetting(d)
     
@@ -48,6 +48,7 @@ class Network:
         self.networkType = networkDict["type"]
         self.master = networkDict["master"]
         self.master_ip = ""
+        self.netJSON = {}
     
     def createNetwork(self):
         network_address = self.networkDict["network_ip"]
@@ -65,7 +66,6 @@ class Network:
         return result
 
     def makeConnections(self):
-        netJSON = {}
         devices = self.networkDict["devices"]
         network_address = self.networkDict["network_ip"]
         networkPrefix = ".".join(network_address.split(".")[0:-1])
@@ -77,7 +77,7 @@ class Network:
         os.system(command)
         result = self.getIp(networkPrefix, self.master)
         self.master_ip = result[0]
-        netJSON[self.master] = {"ip":result[0], "eth":result[1]}
+        self.netJSON[self.master] = {"ip":result[0], "eth":result[1]}
         self.defaultSetting(self.master)
 
         #Connect others
@@ -88,7 +88,7 @@ class Network:
 
             #Extract the ip and eth number for the device d
             result = self.getIp(networkPrefix, d)
-            netJSON[d] = {"ip":result[0], "eth":result[1]}
+            self.netJSON[d] = {"ip":result[0], "eth":result[1]}
             clientIPs[d] = result[0]
             self.defaultSetting(d)
 
@@ -101,18 +101,20 @@ class Network:
             file.write(json.dumps(clientIPs))
         os.system("docker cp {}/clientIPs.json {}:/".format(tmpDir, self.master))
 
-        return netJSON
+        return self.netJSON
     
     def defaultSetting(self, d):
         bandwidth_mbps = self.networkDict["bandwidth_mbps"]
         latency_ms = self.networkDict["latency_ms"]
         print("Setting bw to {} & latency to {}".format(bandwidth_mbps, latency_ms))
-        # commands = [
-        #     "sudo docker exec -i {0} tc qdisc add dev {1} handle 1: root htb default 11".format(d, eth_ip_dict[gw][private_network[i]]["eth"]),
-        #     "sudo docker exec -i {0} tc class add dev {1} parent 1: classid 1:1 htb rate {2}Mbps".format(gw, eth_ip_dict[gw][private_network[i]]["eth"], private_networks_dict[private_network[i]]["bandwidth_mbps"]),
-        #     "sudo docker exec -i {0} tc class add dev {1} parent 1:1 classid 1:11 htb rate {2}Mbit".format(gw, eth_ip_dict[gw][private_network[i]]["eth"], private_networks_dict[private_network[i]]["bandwidth_mbps"]),
-        #     "sudo docker exec -i {0} tc qdisc add dev {1} parent 1:11 handle 10: netem delay {2}ms".format(gw, eth_ip_dict[gw][private_network[i]]["eth"], float( private_networks_dict[private_network[i]]["latency_ms"]))
-        # ]
+        commands = [
+            "sudo docker exec -i {0} tc qdisc add dev {1} handle 1: root htb default 11".format(d, self.netJSON[d]["eth"]),
+            "sudo docker exec -i {0} tc class add dev {1} parent 1: classid 1:1 htb rate {2}Mbps".format(d, self.netJSON[d]["eth"], bandwidth_mbps),
+            "sudo docker exec -i {0} tc class add dev {1} parent 1:1 classid 1:11 htb rate {2}Mbit".format(d, self.netJSON[d]["eth"], bandwidth_mbps),
+            "sudo docker exec -i {0} tc qdisc add dev {1} parent 1:11 handle 10: netem delay {2}ms".format(d, self.netJSON[d]["eth"], latency_ms)
+        ]
+        for command in commands:
+            os.system(command)
             
 
 class HDFS:
@@ -144,8 +146,6 @@ if len(sys.argv) == 2 and sys.argv[1] == "-d":
         os.system(command)
 else:
     tarMyCode()
-    # if(input("\nPlease tar the source code (tar -zcvf tmp/src.tar.gz src)\n  Press 0 to exit.\n  Press 1 to continue\n\n") == 0):
-    #     sys.exit()
     #Create Devices
     print("\n\n\t\tCREATING DEVICES")
     print("\t\t----------------\n")

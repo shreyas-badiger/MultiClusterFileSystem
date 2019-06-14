@@ -14,11 +14,11 @@ class SimpleTests:
 
         if code == "build":
             print("\n*******************************************************")
-            print("\t\tDeploying code on the clients")
+            print("\t\tDeploy + Build code on the clients")
             print("*******************************************************")
             self.compileClients()
             print("\n*******************************************************")
-            print("\t\tDeploying code on the masters")
+            print("\t\tDeploy + Build code on the masters")
             print("*******************************************************")
             self.compileAndStartServers()
         elif code == "run":
@@ -54,6 +54,7 @@ class SimpleTests:
     def clientWorkflow1(self):
         print("\n\n\tWORKFLOW-1")
         print("\t----------\n")
+        print("(C1.1 writes files, C2.1 reads the files)")
         # C1.1 write 5 files to it's master1
         commands = [
             "docker exec -i C1.1 touch C1.1_file1.txt",
@@ -106,7 +107,7 @@ class SimpleTests:
     def clientWorkflow2(self):
         print("\n\n\tWORKFLOW-2")
         print("\t----------\n")
-
+        print("(All Clients write and read each other's files.)")
         # All clients create and send a file to the master
         print("\n\nALL CLIENTS WRITE A FILE\n")
         for d in self.devices["clients"]:
