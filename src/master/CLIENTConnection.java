@@ -36,13 +36,13 @@ public class CLIENTConnection implements Runnable {
                         while ((accessMode = in.readLine()) != null){
                             // System.err.print(accessMode);
                             switch(accessMode){
-                                case "Read":
+                                case "r":
                                     while((outGoingFileName = in.readLine()) != null){
                                         System.err.print("Preparing to send file...");
                                         sendFile(outGoingFileName);
                                         break;
                                     }
-                                    case "Write":
+                                case "w":
                                     os = new PrintStream(clientSocket.getOutputStream()); // to write to client
 
                                     while((outGoingFileName = in.readLine()) != null){
@@ -208,6 +208,7 @@ public class CLIENTConnection implements Runnable {
             while (file_size > 0 && (bytesRead = clientData.read(buffer, i, (int) Math.min(1024, file_size))) != -1) {
                 System.out.println("Inside the while...");
                 // this needs to be fixed....
+                System.out.println("Buffer.." + buffer);
                 output.write(buffer, 0, bytesRead);
                 file_size -= bytesRead;
             }

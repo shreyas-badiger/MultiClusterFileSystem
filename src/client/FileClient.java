@@ -24,7 +24,7 @@ public class FileClient {
             System.err.println("Cannot connect to the server, try again later.");
             System.exit(1);
         }
-
+        
         os = new PrintStream(sock.getOutputStream());
         System.err.println("**********************************************");
         System.out.print("\n\n");
@@ -35,36 +35,47 @@ public class FileClient {
         System.err.println("**********************************************");
 
         try {
-            switch (Integer.parseInt(selectAction())) {
-                case 1:
+            switch (args[0]) {
+                case "snd":
                     os.println("1");
                     String fileName;
-                    System.err.println("Enter file name you wish to upload: ");
-                    fileName = stdin.readLine();
+                    //System.err.println("Enter file name you wish to upload: ");
+                    fileName = args[1];
                     sendFile(fileName);
                     break;
-                case 2:
+                case "rcv":
                     os.println("2");
-                    System.err.println("Enter the Mode: Read or Write ?   ");
-                    mode = stdin.readLine();
+                    //System.err.println("Enter the Mode: Read or Write ?   ");
+                    mode = args[1];
                     os.println(mode);
                     switch(mode){
-                        case "Read":
+                        case "r":
                         // How to display all the available files to read/write ?????
-                            System.err.print("Enter the file name you wish to read: ");
-                            fileName = stdin.readLine();
+                            //System.err.print("Enter the file name you wish to read: ");
+                            fileName = args[2];
                             os.println(fileName);
                             receiveFile(fileName);
                             break;
-                        case "Write":
+                        case "w":
                         // How to display all the available files to read/write ?????
-                            System.err.print("Enter the file name you need to write in: ");
-                            fileName = stdin.readLine();
+                            //System.err.print("Enter the file name you need to write in: ");
+                            fileName = args[2];
                             os.println(fileName);
                             receiveFile(fileName);
                             System.out.print("\n\n");
-                            System.err.print("Type 'Yes' to commit your changes -->>>  ");
-                            inputAfterWriting = stdin.readLine();
+                            //System.err.print("Type 'Yes' to commit your changes -->>>  ");
+                            try
+                            {
+                                FileWriter fw = new FileWriter(fileName,true); //the true will append the new data
+                                fw.write("changed the file...\n");//appends the string to the file
+                                fw.close();
+                            }
+                            catch(IOException ioe)
+                            {
+                                System.err.println("IOException: " + ioe.getMessage());
+                            }
+                            System.out.println("\nFile has been changed in the backend...");
+                            inputAfterWriting = "Yes";
                             os.println(inputAfterWriting);
                             // System.err.print(inputAfterWriting);
                             switch(inputAfterWriting){
@@ -100,13 +111,13 @@ public class FileClient {
         }
     }
 
-    public static String selectAction() throws IOException {
-        System.out.println("1. Send file.");
-        System.out.println("2. Receive file.");
-        System.out.print("\nMake selection: ");
+    // public static String selectAction() throws IOException {
+    //     System.out.println("1. Send file.");
+    //     System.out.println("2. Receive file.");
+    //     System.out.print("\nMake selection: ");
 
-        return stdin.readLine();
-    }
+    //     return stdin.readLine();
+    // }
 
     public static void sendFile(String fileName) {
         /*try {
@@ -176,7 +187,8 @@ public class FileClient {
 
             System.out.println("File "+fileName+" received from Server.");
         } catch (IOException ex) {
-            Logger.getLogger(CLIENTConnection.class.getName()).log(Level.SEVERE, null, ex);
+            // break;
+            // Logger.getLogger(CLIENTConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
