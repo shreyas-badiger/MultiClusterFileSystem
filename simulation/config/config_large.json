@@ -1,0 +1,154 @@
+{
+    "devices":{
+        "clients": ["C1.1", "C1.2", "C1.3", "C2.1", "C2.2", "C2.3", "C3.1", "C3.2", "C3.3",
+            "C4.1", "C4.2", "C4.3", "C5.1", "C5.2", "C5.3", "C6.1", "C6.2","C6.3",
+            "C7.1", "C7.2", "C7.3", "C8.1", "C8.2", "C8.3", "C9.1", "C9.2","C9.3",
+            "C10.1", "C10.2", "C10.3", "C11.1", "C11.2", "C11.3", "C12.1", "C12.2","C12.3"],
+        "masters" : ["master1", "master2","master3", "master4", "master5", "master6",
+            "master7", "master8", "master9", "master10", "master11", "master12","mutex_server"],
+        "slaves" :["slave1.1", "slave1.2","slave1.3","slave1.4","slave1.5",
+            "slave2.1", "slave2.2","slave2.3","slave2.4","slave2.5",
+            "slave3.1", "slave3.2","slave3.3","slave3.4","slave3.5",
+            "slave4.1", "slave4.2","slave4.3","slave4.4","slave4.5",
+            "slave5.1", "slave5.2","slave5.3","slave5.4","slave5.5",
+            "slave6.1", "slave6.2","slave6.3","slave6.4","slave6.5",
+            "slave7.1", "slave7.2","slave7.3","slave7.4","slave7.5",
+            "slave8.1", "slave8.2","slave8.3","slave8.4","slave8.5",
+            "slave9.1", "slave9.2","slave9.3","slave9.4","slave9.5",
+            "slave10.1", "slave10.2","slave10.3","slave10.4","slave10.5",
+            "slave11.1", "slave11.2","slave11.3","slave11.4","slave11.5",
+            "slave12.1", "slave12.2","slave12.3","slave12.4","slave12.5"
+        ]
+    },
+
+    "networks":{
+        "cluster_1_public_nw":{
+            "master": "master1",
+            "type":"public",
+            "network_ip":"192.168.1.0/24",
+            "devices":["C1.1", "C1.2", "C1.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_2_public_nw":{
+            "master": "master2",
+            "type":"public",
+            "network_ip":"192.168.2.0/24",
+            "devices":["C2.1", "C2.2", "C2.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_3_public_nw":{
+            "master": "master3",
+            "type":"public",
+            "network_ip":"192.168.3.0/24",
+            "devices":["C3.1", "C3.2", "C3.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_4_public_nw":{
+            "master": "master4",
+            "type":"public",
+            "network_ip":"192.168.4.0/24",
+            "devices":["C4.1", "C4.2", "C4.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_5_public_nw":{
+            "master": "master5",
+            "type":"public",
+            "network_ip":"192.168.5.0/24",
+            "devices":["C5.1", "C5.2", "C5.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_6_public_nw":{
+            "master": "master6",
+            "type":"public",
+            "network_ip":"192.168.6.0/24",
+            "devices":["C6.1", "C6.2", "C6.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_7_public_nw":{
+            "master": "master7",
+            "type":"public",
+            "network_ip":"192.168.7.0/24",
+            "devices":["C7.1", "C7.2", "C7.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_8_public_nw":{
+            "master": "master8",
+            "type":"public",
+            "network_ip":"192.168.8.0/24",
+            "devices":["C8.1", "C8.2", "C8.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_9_public_nw":{
+            "master": "master9",
+            "type":"public",
+            "network_ip":"192.168.9.0/24",
+            "devices":["C9.1", "C9.2", "C9.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_10_public_nw":{
+            "master": "master10",
+            "type":"public",
+            "network_ip":"192.168.10.0/24",
+            "devices":["C10.1", "C10.2", "C10.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_11_public_nw":{
+            "master": "master11",
+            "type":"public",
+            "network_ip":"192.168.11.0/24",
+            "devices":["C11.1", "C11.2", "C11.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_12_public_nw":{
+            "master": "master12",
+            "type":"public",
+            "network_ip":"192.168.12.0/24",
+            "devices":["C12.1", "C12.2", "C12.3"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_1_private_nw":{
+            "master": "master1",
+            "type":"private",
+            "network_ip":"172.16.1.0/24",
+            "devices":["slave1.1","slave1.2","slave1.3","slave1.4","slave1.5"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_2_private_nw":{
+            "master": "master2",
+            "type":"private",
+            "network_ip":"172.16.2.0/24",
+            "devices":["slave2.1","slave2.2","slave2.3","slave2.4","slave2.5"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_3_private_nw":{
+            "master": "master3",
+            "type":"private",
+            "network_ip":"172.16.3.0/24",
+            "devices":["slave3.1","slave3.2","slave3.3","slave3.4","slave3.5"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        },
+        "cluster_global_nw":{
+            "master": "mutex_server",
+            "type":"global",
+            "network_ip":"10.0.0.0/24",
+            "devices":["master1","master2","master3","master4","master5","master6","master7","master8","master9","master10","master11","master12"],
+            "bandwidth_mbps":100,
+            "latency_ms":1
+        }
+    }
+}
