@@ -38,7 +38,7 @@ public class CLIENTConnection implements Runnable {
                             switch(accessMode){
                                 case "r":
                                     while((outGoingFileName = in.readLine()) != null){
-                                        System.err.print("Preparing to send file...");
+                                        System.err.print("\nPreparing to send file...");
                                         sendFile(outGoingFileName);
                                         break;
                                     }
@@ -51,7 +51,7 @@ public class CLIENTConnection implements Runnable {
                                         //if the file is there in the master's blocked list, return there only
                                         if(FileServer.files_blocked.contains(outGoingFileName)) {
                                             // send exception to client
-                                            os.println("File is locked, try again later !!");
+                                            os.println("\nFile is locked, try again later !!");
                                             break;
                                         }
 
@@ -64,23 +64,23 @@ public class CLIENTConnection implements Runnable {
                                             in2 = new BufferedReader(new InputStreamReader(sock1.getInputStream()));
                                             os1 = new PrintStream(sock1.getOutputStream()); //to write to mutex server
                                         } catch (Exception e) {
-                                            System.err.println("Cannot connect to the mutex server, try again later.");
+                                            System.err.println("\nCannot connect to the mutex server, try again later.");
                                             System.exit(1);
                                         }
 
                                         try {
                                             os1.println(outGoingFileName + ",check"); // send this to mutex server
                                             flag = Integer.parseInt(in2.readLine());
-                                            System.out.println("Got this flag from Mutex Sever.. " + flag);
+                                            System.out.println("\nGot this flag from Mutex Sever.. " + flag);
                                         } catch (Exception e) {
-                                            System.err.println("Could not read flag from mutex server");
+                                            System.err.println("\nCould not read flag from mutex server");
                                         }
 
                                         if (flag == 0) { // okay to send
 
                                             FileServer.files_blocked.add(outGoingFileName);
 
-                                            System.err.print("Preparing to send file...");
+                                            System.err.print("\nPreparing to send file...");
                                             sendFile(outGoingFileName);
                                             // can add a waiting statement here.... stating that Client # is writing now.
                                             String doneWriting;
@@ -100,7 +100,7 @@ public class CLIENTConnection implements Runnable {
                                             }
                                         } else { //not okay to send
                                             // send exception to client
-                                            os.println("File is locked, try again later !!");
+                                            System.out.println("File is locked, try again later !!");
                                         }
 
                                         sock1.close();
@@ -170,6 +170,7 @@ public class CLIENTConnection implements Runnable {
         //              System.out.println("Filename: "+ fileName);
                 }
                 catch(EOFException e){
+                        System.out.println("\nNothing in clientData...");
                         break;
                 }
             }
@@ -307,7 +308,7 @@ public class CLIENTConnection implements Runnable {
 
 
         } catch (Exception e) {
-            System.err.println("Broadcast failed");
+            System.err.println("\nBroadcast of the file failed.");
         }
     }
 

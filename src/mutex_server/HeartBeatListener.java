@@ -36,7 +36,7 @@ public class HeartBeatListener {
                     System.out.println(in.readLine()); //will go on until socket times out
                 }
 
-            } catch (SocketTimeoutException e) {
+            } catch (Exception e) {
                 System.err.println("Mutex Server is down.. Taking charge..");
                 //send a broadcast to the master network
                 broadcastIP("localhost");
@@ -57,7 +57,7 @@ public class HeartBeatListener {
             socket.send(packet);
             socket.close();
         } catch (Exception e) {
-            System.err.println("Broadcast IP failed");
+            System.err.println("\nBroadcasting the new primary Mutex Server IP failed.");
         }
     }
 

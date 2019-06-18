@@ -10,7 +10,7 @@ public class MutexServer {
     private static ServerSocket serverSocket;
     private static Socket masterSocket = null;
 
-    private static Map<String, Integer> mutex  = new HashMap<>();
+    public static Map<String, Integer> mutex  = new HashMap<>();
     //key : String -> filename
     //value : 0 -> available for write; 1 -> not available
 
@@ -47,7 +47,7 @@ public class MutexServer {
 
         try {
             serverSocket = new ServerSocket(4445);
-            System.out.println("Server started.");
+            System.out.println("\n Mutex Server started.");
         } catch (Exception e) {
             System.err.println("Port already in use.");
             System.exit(1);
@@ -56,7 +56,7 @@ public class MutexServer {
         while (true) {
             try {
                 masterSocket = serverSocket.accept();
-                System.out.println("Accepted connection : " + masterSocket);
+                System.out.println("\nAccepted connection : " + masterSocket);
 
                 Thread t = new Thread(new MasterConnection(masterSocket));
 

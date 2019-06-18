@@ -12,9 +12,9 @@ public class BroadcastListener {
 
         try {
             socket = new DatagramSocket(4446);
-            System.out.println("Listening to Broadcast messages on port 4446...");
+            System.out.println("\nListening to Broadcast messages on port 4446...");
         } catch (Exception e) {
-            System.err.println("Port already in use.");
+            System.err.println("\nPort already in use.");
             System.exit(1);
         }
 
@@ -24,14 +24,14 @@ public class BroadcastListener {
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, 1024);
                 socket.receive(packet);
-                System.out.println("Received packet...");
+                System.out.println("\nReceived broadcast packet...");
 
                 Thread t = new Thread(new BroadcastConnection(packet));
                 t.start();
                 //socket.close();
 
             } catch (Exception e) {
-                System.err.println("Error in connection attempt.");
+                System.err.println("\nIn Broadcast Listener...Error in connection attempt.");
             }
         }
     }

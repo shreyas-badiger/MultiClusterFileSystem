@@ -16,7 +16,7 @@ public class HeartBeatSender extends TimerTask {
             os1.println("heartbeat");
 
         } catch (Exception e) {
-
+            System.out.println("\nFailed to send heartbeat message!")
         }
     }
 

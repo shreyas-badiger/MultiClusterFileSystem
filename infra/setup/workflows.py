@@ -22,8 +22,9 @@ class SimpleTests:
             print("*******************************************************")
             self.compileAndStartServers()
         elif code == "run":
-            self.clientWorkflow1()
-            self.clientWorkflow2()
+            # self.clientWorkflow1()
+            # self.clientWorkflow2()
+            self.updateFileWorkflow()
 
     def compileClients(self):
         for d in self.devices["clients"]:
@@ -132,6 +133,41 @@ class SimpleTests:
         for d in self.devices["clients"]:
             for fileName in self.devices["clients"]:
                 os.system("docker exec -i {0} rm {1}_file.txt".format(d, fileName))
+    
+
+    def updateFileWorkflow (self):
+
+        commands = [
+
+            # print "Files in C1.1: "
+            "docker exec -i C1.1 ls | grep txt",
+
+            # C1.1 write 1 file c1.1_file6.txt to it's master1
+            "docker exec -i C1.1 touch c1.1_file6.txt",
+
+            #Send the file to it's cluster master
+            "docker exec -i C1.1 java FileClient snd c1.1_file6.txt",
+
+            #All other cluster's client request and receives files
+            "docker exec -i C2.1 java FileClient rcv r c1.1_file6.txt",
+            "docker exec -i C3.1 java FileClient rcv r c1.1_file6.txt",
+
+            #Verify if the file rcvd successfully.
+            # print "List files in C2.1"
+            "docker exec -i C2.1 ls | grep txt",
+
+            # print "List files in C3.1"
+            "docker exec -i C3.1 ls | grep txt",
+
+            # print "C2.1 requests the file c1.1_file6.txt to write"
+            "docker exec -i C2.1 java FileClient rcv w c1.1_file6.txt",
+
+            # print "At the same time c3.1 also requests for the same"
+            "docker exec -i C3.1 java FileClient rcv w c1.1_file6.txt",
+            ]
+
+        for command in commands:
+            os.system(command)
 
 
 if len(sys.argv) == 2 and sys.argv[1] == "-b":

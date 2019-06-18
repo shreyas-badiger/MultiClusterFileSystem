@@ -61,9 +61,9 @@ public class FileClient {
                             //System.err.print("Enter the file name you need to write in: ");
                             fileName = args[2];
                             os.println(fileName);
-                            receiveFile(fileName);
-//                            System.out.print("\n\n");
-                            //System.err.print("Type 'Yes' to commit your changes -->>>  ");
+                            long file_size = receiveFile(fileName);
+                            System.out.print("\n\n");
+                            
                             try
                             {
                                 FileWriter fw = new FileWriter(fileName,true); //the true will append the new data
@@ -74,8 +74,11 @@ public class FileClient {
                             {
                                 System.err.println("IOException: " + ioe.getMessage());
                             }
+                            
                             System.out.println("\nFile has been changed in the backend...");
-                            inputAfterWriting = "Yes";
+                            System.out.println("\nFile size has increased. Current file size: "+file_size);
+                            System.err.print("\n\nType 'Yes' to commit your changes -->>>  ");
+                            inputAfterWriting = stdin.readLine();
                             os.println(inputAfterWriting);
                             // System.err.print(inputAfterWriting);
                             switch(inputAfterWriting){
@@ -120,45 +123,22 @@ public class FileClient {
     // }
 
     public static void sendFile(String fileName) {
-        /*try {
-            sock = new Socket("192.168.1.5", 4444);
-            } catch (Exception e) {
-            System.err.println("Cannot connect to the server, try again later.");
-            System.exit(1);
-            }*/
+        
          try {
-            // fileName = stdin.readLine();
-            //System.err.print(fileName);
             File myFile = new File(fileName);
             byte[] mybytearray = new byte[(int) myFile.length()];
-            //byte[] mybytearray = new byte[21];
-            //System.out.print("\nmyFile.length = "+ myFile.length());
             FileInputStream fis = new FileInputStream(myFile);
             BufferedInputStream bis = new BufferedInputStream(fis);
             DataInputStream dis = new DataInputStream(bis);
             dis.readFully(mybytearray, 0, mybytearray.length);
-            //System.out.print("\nmyByteArray contents:   ");
-            //System.out.println(Arrays.toString(mybytearray));
             OutputStream os = sock.getOutputStream();
 
             //Sending file name and file size to the server
             DataOutputStream dos = new DataOutputStream(os);
-          //System.out.print("\nMyfile.getname....\n");
-          //System.out.print(myFile.getName());
-        //    dos.writeUTF(fileName);
             String dos_input = fileName + "," + mybytearray.length + "," + new String(mybytearray);
-            //System.out.println("DOS input : " + dos_input);
             dos.writeChars(dos_input);
-        //dos.writeLong(mybytearray.length);
-            //dos.write();
-           // System.out.print("\nmybytearray length ");
-           // System.out.print(mybytearray.length);
-            //dos.write(mybytearray, 0, mybytearray.length);
+       
             dos.flush();
-           // fis.close();
-           // bis.close();
-           // dis.close();
-           // dos.close();
             sock.shutdownOutput();
             System.out.println("File "+fileName+" sent to Server.");
         } catch (Exception e) {
@@ -166,7 +146,7 @@ public class FileClient {
         }
     }
 
-    public static void receiveFile(String fileName) {
+    public static long receiveFile(String fileName) {
         try {
             int bytesRead;
             InputStream in = sock.getInputStream();
@@ -176,6 +156,7 @@ public class FileClient {
             fileName = clientData.readUTF();
             OutputStream output = new FileOutputStream((fileName));
             long size = clientData.readLong();
+            long fileSize = size;
             byte[] buffer = new byte[1024];
             while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
                 output.write(buffer, 0, bytesRead);
@@ -183,12 +164,11 @@ public class FileClient {
             }
 
             output.close();
-            // in.close();
 
             System.out.println("File "+fileName+" received from Server.");
+            return fileSize;
         } catch (IOException ex) {
-            // break;
-            // Logger.getLogger(CLIENTConnection.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
         }
     }
 }
