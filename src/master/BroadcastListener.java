@@ -22,10 +22,14 @@ public class BroadcastListener {
         while (true) {
             try {
                 byte[] buf = new byte[1024];
-                DatagramPacket packet = new DatagramPacket(buf, 1024);
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
                 System.out.println("\nReceived broadcast packet...");
-
+                // System.out.println("\nBroadcast Packet byte array : ");
+                // for(int ind=0; ind<buf.length; ind++){
+                //     System.out.println(buf[ind]);
+                // }
+                System.out.println("\nPacket length : " + packet.getLength());
                 Thread t = new Thread(new BroadcastConnection(packet));
                 t.start();
                 //socket.close();

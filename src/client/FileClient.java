@@ -64,19 +64,19 @@ public class FileClient {
                             long file_size = receiveFile(fileName);
                             System.out.print("\n\n");
                             
-                            try
-                            {
-                                FileWriter fw = new FileWriter(fileName,true); //the true will append the new data
-                                fw.write("changed the file...\n");//appends the string to the file
-                                fw.close();
-                            }
-                            catch(IOException ioe)
-                            {
-                                System.err.println("IOException: " + ioe.getMessage());
-                            }
+                            // try
+                            // {
+                            //     FileWriter fw = new FileWriter(fileName,true); //the true will append the new data
+                            //     fw.write("changed the file...\n");//appends the string to the file
+                            //     fw.close();
+                            // }
+                            // catch(IOException ioe)
+                            // {
+                            //     System.err.println("IOException: " + ioe.getMessage());
+                            // }
                             
-                            System.out.println("\nFile has been changed in the backend...");
-                            System.out.println("\nFile size has increased. Current file size: "+file_size);
+                            // System.out.println("\nFile has been changed in the backend...");
+                            // System.out.println("\nFile size has increased. Current file size: "+file_size);
                             System.err.print("\n\nType 'Yes' to commit your changes -->>>  ");
                             inputAfterWriting = stdin.readLine();
                             os.println(inputAfterWriting);
@@ -136,6 +136,7 @@ public class FileClient {
             //Sending file name and file size to the server
             DataOutputStream dos = new DataOutputStream(os);
             String dos_input = fileName + "," + mybytearray.length + "," + new String(mybytearray);
+            System.out.println("DOS Input : " + dos_input);
             dos.writeChars(dos_input);
        
             dos.flush();

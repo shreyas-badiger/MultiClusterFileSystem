@@ -1,7 +1,7 @@
 {
     "devices":{
         "clients": ["C1.1", "C1.2", "C1.3", "C2.1", "C2.2", "C2.3", "C3.1", "C3.2", "C3.3"],
-        "masters" : ["master1", "master2","master3", "mutex_server"],
+        "masters" : ["master1", "master2","master3", "mutex_server","mutex_server_2"],
         "slaves" :["slave1.1", "slave1.2","slave1.3","slave1.4","slave1.5",
             "slave2.1", "slave2.2","slave2.3","slave2.4","slave2.5",
             "slave3.1", "slave3.2","slave3.3","slave3.4","slave3.5"
@@ -61,7 +61,7 @@
             "master": "mutex_server",
             "type":"global",
             "network_ip":"10.0.0.0/24",
-            "devices":["master1","master2","master3"],
+            "devices":["master1","master2","master3","mutex_server_2"],
             "bandwidth_mbps":100,
             "latency_ms":1
         }

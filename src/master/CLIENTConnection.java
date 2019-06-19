@@ -142,7 +142,7 @@ public class CLIENTConnection implements Runnable {
         try {
             int bytesRead;
             DataInputStream clientData = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-            System.out.println("In receive file....");
+            System.out.println("Receiving the file....");
             StringBuffer inputLine = new StringBuffer();
 /*          String tmp;
             while ((tmp = clientData.readLine()) != null) {
@@ -150,8 +150,8 @@ public class CLIENTConnection implements Runnable {
                     inputLine.append(tmp);
                     System.out.println(tmp);
             }
-*/          System.out.print("\n");
-            System.out.print("clientData available : " + clientData.available());
+*/          
+//             System.out.print("clientData available : " + clientData.available());
             byte c = 0;
             String fileName = "";
             int i = 0;
@@ -162,12 +162,12 @@ public class CLIENTConnection implements Runnable {
                         if(c==',')
                                 break;
                         char character_1 = (char)c;
-                        System.out.println("Character in fileName : " + c);
+                        // System.out.println("Character in fileName : " + c);
                         if(c != 0){
-                                System.out.println("Inside while Character in fileName : " + character_1);
+                                // System.out.println("Inside while Character in fileName : " + character_1);
                                 fileName += character_1;
                         }
-        //              System.out.println("Filename: "+ fileName);
+                    //   System.out.println("\nFilename: "+ fileName);
                 }
                 catch(EOFException e){
                         System.out.println("\nNothing in clientData...");
@@ -194,25 +194,41 @@ public class CLIENTConnection implements Runnable {
                 }
 
             }
-            for(int j = 0; j<fileSize.length(); j++){
-                System.out.println("Character in fileSize string : " + fileSize.charAt(j));
-            }
-            System.out.println("Got a file... FileName = " + fileName + " File Size = " + fileSize);
+            // for(int j = 0; j<fileSize.length(); j++){
+            //     System.out.println("Character in fileSize string : " + fileSize.charAt(j));
+            // }
+            System.out.println("\nGot a file... FileName = " + fileName + " File Size = " + fileSize);
             System.out.print("\n\n");
-            //fileSize = fileSize.trim();
-            Integer file_size = Integer.valueOf(fileSize);
-            System.out.println("Number_filesize : " + file_size);
             OutputStream output = new FileOutputStream(fileName);
-            //long size = clientData.readLong();
-            //System.out.println("Got a file of size:..." + size);
-            byte[] buffer = new byte[1024];
-            while (file_size > 0 && (bytesRead = clientData.read(buffer, i, (int) Math.min(1024, file_size))) != -1) {
-                System.out.println("Inside the while...");
-                // this needs to be fixed....
-                System.out.println("Buffer.." + buffer);
-                output.write(buffer, 0, bytesRead);
-                file_size -= bytesRead;
+
+            String fileContents = new String();
+            while(c != -1){
+                try{
+                        c = clientData.readByte();
+                        i++;
+                        // if(c == ',')
+                        //         break;
+                        //int a = Character.getNumericValue((char)c);
+                        //fileSize += a;
+                        //System.out.println(new String(c + ""));
+                        char character = (char)c;
+                        if(c != 0)
+                            fileContents += character;
+                }
+                catch(EOFException e){
+                        break;
+                }
             }
+
+            // System.out.println("\nFile Contents : " + fileContents);
+            // byte[] buffer = new byte[1024];
+            // while (file_size > 0 && (bytesRead = clientData.read(buffer, i, (int) Math.min(1024, file_size))) != -1) {
+            //     System.out.println("Inside the while...");
+            //     // this needs to be fixed....
+            //     System.out.println("Buffer.." + buffer);
+            //     output.write(buffer, 0, bytesRead);
+            //     file_size -= bytesRead;
+            // }
             System.out.println("File "+fileName+" received from client.");
 
             //whenever the receives a file, it should be put in HDFS and cleared off from master's memory
@@ -239,7 +255,7 @@ public class CLIENTConnection implements Runnable {
             }
 
             //broadcast this file to other masters
-            broadcastFile(fileName);
+            broadcastFile(fileName, fileContents);
             output.close();
             clientData.close();
 
@@ -269,6 +285,10 @@ public class CLIENTConnection implements Runnable {
 
             //Sending file name and file size to the server
             DataOutputStream dos = new DataOutputStream(os);
+            System.out.println("\nMybytearray : ");
+            for(int ind=0; ind<mybytearray.length; ind++){
+                System.out.println(mybytearray[ind]);
+            }
             dos.writeUTF(myFile.getName());
             dos.writeLong(mybytearray.length);
             dos.write(mybytearray, 0, mybytearray.length);
@@ -279,27 +299,38 @@ public class CLIENTConnection implements Runnable {
         }
     }
 
-    public void broadcastFile(String fileName) {
+    public void broadcastFile(String fileName, String fileContents) {
         try {
             DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
-
+            System.out.println("\nFile Contents (broadcast function) : " + fileContents);
             File myFile = new File(fileName);
             String temp = fileName + "\n";
             byte[] fname = temp.getBytes();
-            byte[] mybytearray = new byte[(int) myFile.length()];
-
+            // System.out.println("\nFname byte array : ");
+            // for(int ind=0; ind<fname.length; ind++){
+            //     System.out.println(fname[ind]);
+            // }
+            // byte[] mybytearray = new byte[(int) myFile.length()];
+            byte[] b = fileContents.getBytes();
+            // System.out.println("\nFile Contents byte array : ");
+            // for(int ind=0; ind<b.length; ind++){
+            //     System.out.println(b[ind]);
+            // }
             FileInputStream fis = new FileInputStream(myFile);
             BufferedInputStream bis = new BufferedInputStream(fis);
             //bis.read(mybytearray, 0, mybytearray.length);
 
             DataInputStream dis = new DataInputStream(bis);
-            dis.readFully(mybytearray, 0, mybytearray.length);
+            // dis.readFully(mybytearray, 0, mybytearray.length);
 
-            byte[] final_array = new byte[fname.length + mybytearray.length];
+            byte[] final_array = new byte[fname.length + b.length];
             System.arraycopy(fname, 0, final_array, 0, fname.length);
-            System.arraycopy(mybytearray, 0, final_array, fname.length, mybytearray.length);
-
+            System.arraycopy(b, 0, final_array, fname.length, b.length);
+            // System.out.println("\nFinal byte array : ");
+            // for(int ind=0; ind<final_array.length; ind++){
+            //     System.out.println(final_array[ind]);
+            // }
             DatagramPacket packet
                     = new DatagramPacket(final_array, final_array.length, InetAddress.getByName("255.255.255.255"), 4446);
             socket.send(packet);

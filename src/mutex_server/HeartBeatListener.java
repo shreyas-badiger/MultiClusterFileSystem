@@ -33,15 +33,19 @@ public class HeartBeatListener {
                 hbsender.setSoTimeout(30000); //expect to read every 30s
 
                 while(true) {
-                    System.out.println(in.readLine()); //will go on until socket times out
+                    String received_string = in.readLine();
+                    if(received_string != null){
+                        System.out.println(received_string); //will go on until socket times out
+                    } else break;
+                    
                 }
 
             } catch (Exception e) {
                 System.err.println("Mutex Server is down.. Taking charge..");
                 //send a broadcast to the master network
-                broadcastIP("localhost");
+                broadcastIP("10.0.0.6");
             }
-
+        broadcastIP("10.0.0.6");
 
     }
 
