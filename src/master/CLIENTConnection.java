@@ -51,7 +51,7 @@ public class CLIENTConnection implements Runnable {
                                         //if the file is there in the master's blocked list, return there only
                                         if(FileServer.files_blocked.contains(outGoingFileName)) {
                                             // send exception to client
-                                            os.println("\nFile is locked, try again later !!");
+                                            os.println("locked");
                                             break;
                                         }
 
@@ -100,7 +100,7 @@ public class CLIENTConnection implements Runnable {
                                             }
                                         } else { //not okay to send
                                             // send exception to client
-                                            System.out.println("File is locked, try again later !!");
+                                            os.println("locked");
                                         }
 
                                         sock1.close();
@@ -215,8 +215,9 @@ public class CLIENTConnection implements Runnable {
             }
             System.out.println("File "+fileName+" received from client.");
 
-            //whenever the receives a file, it should be put in HDFS and cleared off from master's memory
-
+            //*****************TODO********************************
+            //whenever the master receives a file, it should be put in HDFS
+            //hdfs put (fileName);
 
             //the mutex server is to be updated
             try {
@@ -240,8 +241,14 @@ public class CLIENTConnection implements Runnable {
 
             //broadcast this file to other masters
             broadcastFile(fileName);
+
             output.close();
             clientData.close();
+
+            //***************************************
+            //clear the file off from master's memory
+            File file = new File(fileName);
+            file.delete();
 
         } catch (IOException ex) {
             System.out.print("Exception: \n");
@@ -253,6 +260,11 @@ public class CLIENTConnection implements Runnable {
 
     public void sendFile(String fileName) {
         try {
+
+            //************TODO*****************************
+            // get the file from HDFS.. will be stored in the local system, and send it across to the client
+            //hdfs get (fileName);
+
             //handle file read
             File myFile = new File(fileName);
             byte[] mybytearray = new byte[(int) myFile.length()];
@@ -274,6 +286,11 @@ public class CLIENTConnection implements Runnable {
             dos.write(mybytearray, 0, mybytearray.length);
             dos.flush();
             System.out.println("File "+fileName+" sent to client.");
+
+            //delete the file from master's memory****************
+            myFile.delete();
+
+
         } catch (Exception e) {
             System.err.println("File does not exist!");
         }

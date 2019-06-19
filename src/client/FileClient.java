@@ -61,6 +61,14 @@ public class FileClient {
                             //System.err.print("Enter the file name you need to write in: ");
                             fileName = args[2];
                             os.println(fileName);
+
+                            //check if any exceptions were written
+                            BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                            if (in.readLine().equals("locked")) {
+                                System.out.println("File locked, try again later!");
+                                break;
+                            }
+
                             long file_size = receiveFile(fileName);
                             System.out.print("\n\n");
                             

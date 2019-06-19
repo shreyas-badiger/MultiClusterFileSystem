@@ -21,15 +21,17 @@ public class BroadcastConnection implements Runnable {
             bfReader = new BufferedReader(new InputStreamReader(is));
 
             String temp = null;
-            temp = bfReader.readLine(); // read the filename
+            temp = bfReader.readLine(); // read the filename or IP string
             System.out.println("hereeee...  "+ temp);
 
             //temp could be a filename or an IP in the format IP-<ip address>
-
+            //filename when another master broadcasts a file
+            //IP-<ip address> when backup mutex server takes charge and informs all to call it for mutex
             if(temp.startsWith("IP")) {
                 String[] arr = temp.split("-");
                 String newMutexServerIP = arr[1];
 
+                //***********TODO***************************************
                 //update the IP file with this IP, so that after this the master will call this new server
 
             } else {
@@ -38,10 +40,21 @@ public class BroadcastConnection implements Runnable {
                 //int size = Integer.parseInt(bfReader.readLine());
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
-                while((temp = bfReader.readLine()) != null){
-                    writer.append(temp);
+                String line;
+                while((line = bfReader.readLine()) != null){
+                    writer.append(line);
                 }
                 writer.close();
+
+                //************TODO*****************
+                //This master received a file, should put it in the local HDFS.  //temp holds the filename
+                //hdfs put (temp)
+
+
+                //***************************************
+                //clear the file off from master's memory
+                File file = new File(temp);
+                file.delete();
 
             }
 
