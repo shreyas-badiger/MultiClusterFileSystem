@@ -97,9 +97,54 @@ class Network:
             os.system("docker cp {}/ip {}:/".format(tmpDir, d))
 
 
-        with open('{}/clientIPs.json'.format(tmpDir),'w') as file:
-            file.write(json.dumps(clientIPs))
-        os.system("docker cp {}/clientIPs.json {}:/".format(tmpDir, self.master))
+        #This block is responsible to setup HDFS
+        if(self.networkDict["type"] == "private" and len(sys.argv) == 2 and sys.argv[1]=="-hdfs"):
+            print("\n\n\t***Setting up HDFS cluster***\n")
+            commands = []
+            #On master, gen ssh keys and add it to all the slaves for password-less access.
+            print("\nsetup SSH keys")
+            commands.append("docker exec -i {} ssh-keygen -b 4096 -f /root/.ssh/id_rsa -t rsa -N ''".format(self.master))
+            commands.append("echo root > password")
+            commands.append("docker cp password {}:/".format(self.master))
+            commands.append("docker exec -i {} apt-get install sshpass".format(self.master))
+            for c in clientIPs.keys():
+                commands.append("docker exec -i {} sshpass -f password ssh-copy-id -o StrictHostKeychecking=no -i /root/.ssh/id_rsa.pub root@{}".format(self.master, clientIPs[c]))
+            for command in commands:
+                os.popen(command).read()
+
+            #Copy respective core-site.xml to the cluster
+            commands = []
+            print("\nadd core-site.xml")
+            commands.append("docker cp ../resources/{0} {0}:/root/hadoop/etc/hadoop/core-site.xml".format(self.master))
+            commands.append("echo \"{} {}\" > hostsEntry".format(self.master_ip, self.master))
+            for d in devices:
+                commands.append("docker cp ../resources/{} {}:/root/hadoop/etc/hadoop/core-site.xml".format(self.master, d))
+                commands.append("docker cp ../resources/hostsEntry.sh {}:/".format(d))
+                commands.append("docker cp hostsEntry {}:/".format(d))
+                commands.append("docker exec -i {} ./hostsEntry.sh".format(d))
+            for command in commands:
+                os.popen(command).read()
+
+            #Replace HDFS slaves file
+            commands = []
+            print("\nadd slaves file on master")
+            commands.append("touch slaves")
+            for c in clientIPs.keys():
+                commands.append("echo {} >> slaves".format(clientIPs[c]))
+            commands.append("docker cp slaves {}:/root/hadoop/etc/hadoop/slaves".format(self.master))
+
+            ##Format HDFS
+            print("\nreformat HDFS")
+            commands.append("docker exec -i {} /root/hadoop/bin/hdfs namenode -format".format(self.master))
+
+            for command in commands:
+                os.popen(command).read()
+
+
+            #Delete all temp files
+            os.system("rm -rf hostsEntry")
+            os.system("rm -rf slaves")
+            os.system("rm -rf password")
 
         return self.netJSON
     
@@ -115,18 +160,6 @@ class Network:
         ]
         for command in commands:
             os.system(command)
-            
-
-class HDFS:
-    def __init__(self, master, slaves):
-        self.master = master
-        self.slaves = slaves
-
-    def setConfigFiles(self):
-        return
-
-    def startHDFS(self):
-        return
 
 
 startTime = datetime.now()
@@ -168,6 +201,8 @@ else:
         ipJSON[n] = obj.makeConnections()
         network_address = networks[n]["network_ip"]
         ipJSON["broadcast_ip"] = networkPrefix = ".".join(network_address.split(".")[0:-1])+".255"
+
+    os.system("rm -rf code*")
     
     with open('../output/ip.json','w') as file:
         file.write(json.dumps(ipJSON))
