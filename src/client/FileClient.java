@@ -131,16 +131,22 @@ public class FileClient {
             BufferedInputStream bis = new BufferedInputStream(fis);
             DataInputStream dis = new DataInputStream(bis);
             dis.readFully(mybytearray, 0, mybytearray.length);
-            OutputStream os = sock.getOutputStream();
-
+            OutputStream out_s = sock.getOutputStream();
+            System.out.println("\nMybytearray : ");
+            for(int ind=0; ind<mybytearray.length; ind++){
+                System.out.println(mybytearray[ind]);
+            }
             //Sending file name and file size to the server
-            DataOutputStream dos = new DataOutputStream(os);
+            DataOutputStream dos = new DataOutputStream(out_s);
             String dos_input = fileName + "," + mybytearray.length + "," + new String(mybytearray);
             System.out.println("DOS Input : " + dos_input);
             dos.writeChars(dos_input);
        
             dos.flush();
             sock.shutdownOutput();
+            dis.close();
+            dos.close();
+            out_s.close();
             System.out.println("File "+fileName+" sent to Server.");
         } catch (Exception e) {
             System.err.println("File does not exist!");

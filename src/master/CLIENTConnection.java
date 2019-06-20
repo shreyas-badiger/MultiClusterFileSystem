@@ -4,6 +4,7 @@ import java.util.*;
 import java.net.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.concurrent.TimeUnit;
 
 
 public class CLIENTConnection implements Runnable {
@@ -141,9 +142,19 @@ public class CLIENTConnection implements Runnable {
     public void receiveFile() {
         try {
             int bytesRead;
+            // boolean flag = true;
+            // while(flag == true){
+            //     try{
+            //         DataInputStream clientData = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+            //         flag = false;
+            //     }catch(Exception e){
+            //         flag = true;
+            //     }
+            // }
+            
             DataInputStream clientData = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
             System.out.println("Receiving the file....");
-            StringBuffer inputLine = new StringBuffer();
+            // StringBuffer inputLine = new StringBuffer();
 /*          String tmp;
             while ((tmp = clientData.readLine()) != null) {
                     System.out.print("\n here...");
@@ -157,7 +168,9 @@ public class CLIENTConnection implements Runnable {
             int i = 0;
             while(c != -1){
                 try{
+                        System.out.println("\nFirst step...");
                         c = clientData.readByte();
+                        System.out.println("\nhere...");
                         i++;
                         if(c==',')
                                 break;
@@ -170,7 +183,8 @@ public class CLIENTConnection implements Runnable {
                     //   System.out.println("\nFilename: "+ fileName);
                 }
                 catch(EOFException e){
-                        System.out.println("\nNothing in clientData...");
+                        System.out.println("\nOops! There was a error. Please try to send the file again from the client.");
+                        clientData.close();
                         break;
                 }
             }
@@ -257,12 +271,14 @@ public class CLIENTConnection implements Runnable {
             //broadcast this file to other masters
             broadcastFile(fileName, fileContents);
             output.close();
-            clientData.close();
+            clientData.close(); //.>>>>>>
+            System.out.println("\nClient connection closed...");
 
         } catch (IOException ex) {
             System.out.print("Exception: \n");
             ex.printStackTrace();
             System.err.println("Client error. Connection closed.");
+            // clientData.close();
         }
     }
 
@@ -317,11 +333,11 @@ public class CLIENTConnection implements Runnable {
             // for(int ind=0; ind<b.length; ind++){
             //     System.out.println(b[ind]);
             // }
-            FileInputStream fis = new FileInputStream(myFile);
-            BufferedInputStream bis = new BufferedInputStream(fis);
+            // FileInputStream fis = new FileInputStream(myFile);   >>>>>>
+            // BufferedInputStream bis = new BufferedInputStream(fis); >>>>>
             //bis.read(mybytearray, 0, mybytearray.length);
 
-            DataInputStream dis = new DataInputStream(bis);
+            // DataInputStream dis = new DataInputStream(bis); >>>>>
             // dis.readFully(mybytearray, 0, mybytearray.length);
 
             byte[] final_array = new byte[fname.length + b.length];
