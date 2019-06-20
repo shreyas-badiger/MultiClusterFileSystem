@@ -22,9 +22,12 @@ class SimpleTests:
             print("*******************************************************")
             self.compileAndStartServers()
         elif code == "run":
-            self.clientWorkflow1()
-            self.clientWorkflow2()
-            #self.updateFileWorkflow()
+            if(len(sys.argv) == 3 and sys.argv[1] == "-b" and sys.argv[2] == "-hdfs"):
+                self.hdfsCheck()
+            else:
+                self.clientWorkflow1()
+                self.clientWorkflow2()
+                #self.updateFileWorkflow()
 
     def compileClients(self):
         for d in self.devices["clients"]:
@@ -46,7 +49,10 @@ class SimpleTests:
             else:
                 os.system("docker exec -i {} javac FileServer.java".format(master))
                 os.system("docker exec -i {} javac BroadcastListener.java".format(master))
-                os.system("docker exec -d {} java FileServer".format(master))
+                if(len(sys.argv) == 3 and sys.argv[1] == "-b" and sys.argv[2] == "-hdfs"):
+                    os.system("docker exec -d {} java FileServer hdfs".format(master))
+                else:
+                    os.system("docker exec -d {} java FileServer".format(master))
                 os.system("docker exec -d {} java BroadcastListener".format(master))
 
     """
@@ -169,13 +175,17 @@ class SimpleTests:
         for command in commands:
             os.system(command)
 
+    def hdfsCheck(self):
+        self.clientWorkflow1()
+        return
+
 
 if len(sys.argv) == 2 and sys.argv[1] == "-b":
     SimpleTests("build")
 elif len(sys.argv) == 2 and sys.argv[1] == "-r":
     SimpleTests("run")
 else:
-    print "Use [-b to build] or [-r to run]"
+    print "Use [-b to build] or [-b -hdfs to build hdfs] or [-r to run]"
 
 
 
