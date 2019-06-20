@@ -22,7 +22,7 @@ class SimpleTests:
             print("*******************************************************")
             self.compileAndStartServers()
         elif code == "run":
-            if(len(sys.argv) == 3 and sys.argv[1] == "-b" and sys.argv[2] == "-hdfs"):
+            if(len(sys.argv) == 3 and sys.argv[1] == "-r" and sys.argv[2] == "-hdfs"):
                 self.hdfsCheck()
             else:
                 self.clientWorkflow1()
