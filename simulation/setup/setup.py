@@ -217,4 +217,4 @@ else:
     with open('../output/ip.json','w') as file:
         file.write(json.dumps(ipJSON))
 endTime = datetime.now()
-print("Time taken: {}\n\n\n".format(endTime - startTime))
+print("\n###Time taken: {}\n\n\n".format(endTime - startTime))

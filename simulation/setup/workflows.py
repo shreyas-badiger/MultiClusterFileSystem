@@ -110,7 +110,7 @@ class SimpleTests:
             os.system(command.format("C2.1"))
 
         endTime = datetime.now()
-        print("Time taken: {}\n\n\n".format(endTime - startTime))
+        print("\n###Time taken: {}\n\n\n".format(endTime - startTime))
 
     """
     All clusters are interconnected. All create one file each. All can access each other's files.
@@ -145,7 +145,7 @@ class SimpleTests:
             for fileName in self.devices["clients"]:
                 os.system("docker exec -i {0} rm {1}_file.txt".format(d, fileName))
         endTime = datetime.now()
-        print("Time taken: {}\n\n\n".format(endTime - startTime))
+        print("\n####Time taken: {}\n\n\n".format(endTime - startTime))
 
     def updateFileWorkflow (self):
 
@@ -186,9 +186,9 @@ class SimpleTests:
         return
 
 
-if len(sys.argv) == 2 and sys.argv[1] == "-b":
+if len(sys.argv) >= 2 and sys.argv[1] == "-b":
     SimpleTests("build")
-elif len(sys.argv) == 2 and sys.argv[1] == "-r":
+elif len(sys.argv) >= 2 and sys.argv[1] == "-r":
     SimpleTests("run")
 else:
     print "Use [-b to build] or [-b -hdfs to build hdfs] or [-r to run]"
