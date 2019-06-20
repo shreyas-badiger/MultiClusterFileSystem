@@ -9,11 +9,14 @@ public class FileServer {
 
     private static ServerSocket serverSocket;
     private static Socket clientSocket = null;
+    public static String arg = null;
 
     static Set<String> files_blocked = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
 
+        if(args.length != 0)
+            arg = args[0];
         try {
             serverSocket = new ServerSocket(4444);
             System.out.println("Server started.");

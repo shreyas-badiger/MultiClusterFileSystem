@@ -22,9 +22,9 @@ class SimpleTests:
             print("*******************************************************")
             self.compileAndStartServers()
         elif code == "run":
-            # self.clientWorkflow1()
-            # self.clientWorkflow2()
-            self.updateFileWorkflow()
+            self.clientWorkflow1()
+            self.clientWorkflow2()
+            #self.updateFileWorkflow()
 
     def compileClients(self):
         for d in self.devices["clients"]:

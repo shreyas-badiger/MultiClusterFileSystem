@@ -248,6 +248,15 @@ public class CLIENTConnection implements Runnable {
             //whenever the receives a file, it should be put in HDFS and cleared off from master's memory
 
 
+            // *****************TODO********************************
+            // whenever the master receives a file, it should be put in HDFS
+            if(FileServer.arg != null && FileServer.arg.equals("hdfs")){
+                runCommand("hdfs dfs -get /"+fileName+" .");
+            }
+
+            // If the above this works, then clear the files from the memory..(check Nevedha's commit)
+            
+
             //the mutex server is to be updated
             try {
                 //opening socket to mutex server
@@ -285,6 +294,12 @@ public class CLIENTConnection implements Runnable {
 
     public void sendFile(String fileName) {
         try {
+                        //************TODO*****************************
+            // get the file from HDFS.. will be stored in the local system, and send it across to the client
+            if(FileServer.arg != null && FileServer.arg.equals("hdfs")){
+                runCommand("hdfs dfs -put "+fileName+" /");
+            }
+            
             //handle file read
             File myFile = new File(fileName);
             byte[] mybytearray = new byte[(int) myFile.length()];
@@ -356,6 +371,26 @@ public class CLIENTConnection implements Runnable {
 
         } catch (Exception e) {
             System.err.println("\nBroadcast of the file failed.");
+        }
+    }
+
+    private void runCommand(String command){
+        try {
+            String s = null;
+            Process p = Runtime.getRuntime().exec(command);
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+        }
+        catch(Exception e){
         }
     }
 
