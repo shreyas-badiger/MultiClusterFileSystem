@@ -248,6 +248,15 @@ public class CLIENTConnection implements Runnable {
             //whenever the receives a file, it should be put in HDFS and cleared off from master's memory
 
 
+            // *****************TODO********************************
+            // whenever the master receives a file, it should be put in HDFS
+            if(FileServer.arg.equals("hdfs")){
+                // hdfs put (fileName);
+            }
+
+            // If the above this works, then clear the files from the memory..(check Nevedha's commit)
+            
+
             //the mutex server is to be updated
             try {
                 //opening socket to mutex server
@@ -285,6 +294,12 @@ public class CLIENTConnection implements Runnable {
 
     public void sendFile(String fileName) {
         try {
+                        //************TODO*****************************
+            // get the file from HDFS.. will be stored in the local system, and send it across to the client
+            if(FileServer.arg.equals("hdfs")){
+                //hdfs get (fileName);
+            }
+            
             //handle file read
             File myFile = new File(fileName);
             byte[] mybytearray = new byte[(int) myFile.length()];
