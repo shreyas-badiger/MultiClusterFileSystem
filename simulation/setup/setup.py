@@ -107,6 +107,10 @@ class Network:
             commands.append("echo root > password")
             commands.append("docker cp password {}:/".format(self.master))
             commands.append("docker exec -i {} apt-get install sshpass".format(self.master))
+            commands.append("docker cp ../resources/config {0}:/root/.ssh/config".format(self.master))
+            commands.append("docker exec -i {} chmod 600 /root/.ssh/config".format(self.master))
+            commands.append("docker exec -i {} chown root /root/.ssh/config".format(self.master))
+            commands.append("docker exec -i {} sshpass -f password ssh-copy-id -o StrictHostKeychecking=no -i /root/.ssh/id_rsa.pub root@{}".format(self.master, self.master_ip))
             for c in clientIPs.keys():
                 commands.append("docker exec -i {} sshpass -f password ssh-copy-id -o StrictHostKeychecking=no -i /root/.ssh/id_rsa.pub root@{}".format(self.master, clientIPs[c]))
             for command in commands:
@@ -117,6 +121,9 @@ class Network:
             print("\nadd core-site.xml")
             commands.append("docker cp ../resources/{0} {0}:/root/hadoop/etc/hadoop/core-site.xml".format(self.master))
             commands.append("echo \"{} {}\" > hostsEntry".format(self.master_ip, self.master))
+            commands.append("docker cp ../resources/hostsEntry.sh {}:/".format(self.master))
+            commands.append("docker cp hostsEntry {}:/".format(self.master))
+            commands.append("docker exec -i {} ./hostsEntry.sh".format(self.master))
             for d in devices:
                 commands.append("docker cp ../resources/{} {}:/root/hadoop/etc/hadoop/core-site.xml".format(self.master, d))
                 commands.append("docker cp ../resources/hostsEntry.sh {}:/".format(d))
@@ -135,6 +142,9 @@ class Network:
 
             ##Format HDFS
             print("\nreformat HDFS")
+            commands.append("docker exec -i {} /root/hadoop/sbin/start-dfs.sh".format(self.master))
+
+            print("\nstart HDFS")
             commands.append("docker exec -i {} /root/hadoop/bin/hdfs namenode -format".format(self.master))
 
             for command in commands:
