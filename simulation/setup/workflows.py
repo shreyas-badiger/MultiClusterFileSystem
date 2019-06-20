@@ -59,6 +59,7 @@ class SimpleTests:
     File created by a client in cluster1 is accessible by a client in cluster2
     """
     def clientWorkflow1(self):
+        startTime = datetime.now()
         print("\n\n\tWORKFLOW-1")
         print("\t----------\n")
         print("(C1.1 writes files, C2.1 reads the files)")
@@ -108,10 +109,14 @@ class SimpleTests:
             os.system(command.format("C1.1"))
             os.system(command.format("C2.1"))
 
+        endTime = datetime.now()
+        print("Time taken: {}\n\n\n".format(endTime - startTime))
+
     """
     All clusters are interconnected. All create one file each. All can access each other's files.
     """
     def clientWorkflow2(self):
+        startTime = datetime.now()
         print("\n\n\tWORKFLOW-2")
         print("\t----------\n")
         print("(All Clients write and read each other's files.)")
@@ -139,7 +144,8 @@ class SimpleTests:
         for d in self.devices["clients"]:
             for fileName in self.devices["clients"]:
                 os.system("docker exec -i {0} rm {1}_file.txt".format(d, fileName))
-    
+        endTime = datetime.now()
+        print("Time taken: {}\n\n\n".format(endTime - startTime))
 
     def updateFileWorkflow (self):
 
